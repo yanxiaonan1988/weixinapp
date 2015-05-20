@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:https="http://www.mulesoft.org/schema/mule/https" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns:context="http://www.springframework.org/schema/context" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd
+http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/https/current/mule-https.xsd">
+    <context:property-placeholder location="classpath:weixinapp.properties"/>
+    <flow name="weixinappFlow1" doc:name="weixinappFlow1" doc:description="recieve message from weixin">
+        <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="8000" doc:name="HTTP" path="webService/weixin"/>
+        <custom-filter class="hermione.filter.WeixinSignatureFilter" doc:name="Weixin Signature Filter"/>
+        <choice doc:name="Choice From Http Methods">
+            <when expression="#[message.inboundProperties['http.method']=='GET']">
+                <expression-transformer expression="#[message.inboundProperties['echostr']]" doc:name="echostr Expression"/>
+            </when>
+            <when expression="#[message.inboundProperties['http.method']=='POST']">
+                <choice doc:name="Choice">
+                    <when evaluator="xpath" expression="(xml/MsgType)='text'">
+                        <mulexml:dom-to-xml-transformer doc:name="DOM to XML"/>
+                        <mulexml:xml-to-object-transformer returnClass="hermione.model.message.TextMessageRequest" doc:name="XML to Object">
+                            <mulexml:alias name="xml" class="hermione.model.message.TextMessageRequest"/>
+                        </mulexml:xml-to-object-transformer>
+                        <component class="hermione.business.TextMessageBusiness" doc:name="Java"/>
+                        <mulexml:object-to-xml-transformer doc:name="Object to XML">
+                            <mulexml:alias name="xml" class="hermione.model.message.TextMessageResponse"/>
+                        </mulexml:object-to-xml-transformer>
+                    </when>
+                    <when evaluator="xpath" expression="(xml/MsgType)='event'">
+                        <choice doc:name="Choice">
+                            <when evaluator="xpath" expression="(xml/EventKey)='menu_01'">
+                                <mulexml:dom-to-xml-transformer doc:name="DOM to XML"/>
+                                <mulexml:xml-to-object-transformer returnClass="hermione.model.message.EventMessageRequest" doc:name="XML to Object">
+                                    <mulexml:alias name="xml" class="hermione.model.message.EventMessageRequest"/>
+                                </mulexml:xml-to-object-transformer>
+                                <component class="hermione.business.EventMessageBusiness" doc:name="Java"/>
+                        		<mulexml:object-to-xml-transformer doc:name="Object to XML">
+                            		<mulexml:alias name="xml" class="hermione.model.message.TextMessageResponse"/>
+                        		</mulexml:object-to-xml-transformer>
+                            </when>
+                        </choice>
+                    </when>
+                </choice>
+            </when>
+        </choice>
+        <echo-component doc:name="Echo"/>
+    </flow>
+    <!-- -->
+    <flow name="weixinappFlow2" doc:name="weixinappFlow2" doc:description="send message to weixin">
+        <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="8000" path="webService/connectWeixin" doc:name="HTTP" contentType="application/json"/>
+        <custom-filter class="hermione.filter.AccessTokenFilter" doc:name="access token filter"/>
+        <choice doc:name="Choice From Http Methods">
+            <when expression="#[message.inboundProperties['http.method']=='GET']">
+                <choice doc:name="Choice">
+                    <when expression="#[message.inboundProperties['http.relative.path']=='user/info']">
+                    	<set-variable variableName="openid" value="#[message.inboundProperties.openid]" doc:name="Variable"/>
+                    	<set-variable variableName="access_token" value="#[message.outboundProperties.access_token]" doc:name="Variable"/>
+                        <expression-component doc:name="Expression"><![CDATA[flowVars['userinfoQuery'] =
+	'cgi-bin/user/info?access_token=' + access_token
+	+ '&openid='+openid
+	+ '&lang=zh_CN';
+        payload = null;]]></expression-component>
+                    	
+                        <http:outbound-endpoint exchange-pattern="request-response" host="api.weixin.qq.com" port="80" method="GET" doc:name="HTTP" contentType="application/json"
+                        	path="#[userinfoQuery]"/>
+                        <echo-component doc:name="Echo"/>
+                    </when>
+                </choice>
+            </when>
+            <when expression="#[message.inboundProperties['http.method']=='POST']">
+                <choice doc:name="Choice">
+                    <when expression="#[message.inboundProperties['http.relative.path']=='ticket/getticket']">
+                        <custom-filter class="hermione.filter.JsApiTicketFilter" doc:name="jsapi_ticket filter"/>
+                    </when>
+                </choice>
+            </when>
+        </choice>
+    </flow>
+     
+</mule>
