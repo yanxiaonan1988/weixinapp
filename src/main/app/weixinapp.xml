@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mule xmlns:https="http://www.mulesoft.org/schema/mule/https" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns:context="http://www.springframework.org/schema/context" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.2"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.6.1"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
@@ -13,7 +13,10 @@ http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
 http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/https/current/mule-https.xsd">
     <context:property-placeholder location="classpath:weixinapp.properties"/>
-    <flow name="weixinappFlow1" doc:name="weixinappFlow1" doc:description="recieve message from weixin">
+    <spring:beans>
+        <spring:bean id="slbSnsapiBaseTransformerBean" name="slbSnsapiBaseTransformerBean" class="hermione.transformer.SlbSnsapiBaseTransformer"/>
+    </spring:beans>
+    <flow name="weixinappFlow1"  doc:description="recieve message from weixin">
         <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="8000" doc:name="HTTP" path="webService/weixin/huibao"/>
         <custom-filter class="hermione.filter.WeixinSignatureFilter" doc:name="Weixin Signature Filter"/>
         <choice doc:name="Choice From Http Methods">
@@ -52,7 +55,7 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
         <echo-component doc:name="Echo"/>
     </flow>
     <!-- -->
-    <flow name="weixinappFlow2" doc:name="weixinappFlow2" doc:description="send message to weixin">
+    <flow name="weixinappFlow2"  doc:description="send message to weixin">
         <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="8000" path="webService/connectWeixin/huibao" doc:name="HTTP" contentType="application/json"/>
         <custom-filter class="hermione.filter.AccessTokenFilter" doc:name="access token filter"/>
         <choice doc:name="Choice From Http Methods">
@@ -86,7 +89,7 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
     
     
     
-    <flow name="slb" doc:name="slb" doc:description="recieve message from weixin">
+    <flow name="slb"  doc:description="recieve message from weixin">
         <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="8000" doc:name="HTTP" path="webService/weixin/sulaibao"/>
         <custom-filter class="hermione.filter.SlbWeixinSignatureFilter" doc:name="Weixin Signature Filter"/>
         <choice doc:name="Choice From Http Methods">
@@ -125,7 +128,7 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
         <echo-component doc:name="Echo"/>
     </flow>
     <!-- -->
-    <flow name="slb2" doc:name="slb2" doc:description="send message to weixin">
+    <flow name="slb2"  doc:description="send message to weixin">
         <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="8000" path="webService/connectWeixin/sulaibao" doc:name="HTTP" contentType="application/json"/>
         <custom-filter class="hermione.filter.SlbAccessTokenFilter" doc:name="access token filter"/>
         <choice doc:name="Choice From Http Methods">
@@ -143,6 +146,13 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
                         <http:outbound-endpoint exchange-pattern="request-response" host="api.weixin.qq.com" port="80" method="GET" doc:name="HTTP" contentType="application/json"
                         	path="#[userinfoQuery]"/>
                         <echo-component doc:name="Echo"/>
+                    </when>
+                    <when expression="#[message.inboundProperties['http.relative.path']=='menu/zy']">
+                        <transformer ref="slbSnsapiBaseTransformerBean" doc:name="Transformer Reference"/>
+
+                        <http:response-builder status="302" doc:name="HTTP Response Builder">
+            				<http:location value="#[message.outboundProperties.zyUrl]"/>
+        				</http:response-builder>
                     </when>
                 </choice>
             </when>
