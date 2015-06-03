@@ -64,7 +64,7 @@ public class SlbSnsapiBaseTransformer extends AbstractMessageTransformer {
 		}
 		
 		if(openid != null){
-			message.setOutboundProperty("zyUrl", "http://121.40.121.237:8082/checkBound?openId="+openid);
+			message.setOutboundProperty("zyUrl", "http://wx.51sulaibao.cn/checkBound?openId="+openid);
 		}
 		
 		return message;
