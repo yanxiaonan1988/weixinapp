@@ -1,13 +1,15 @@
 package hermione.model.message;
 
-public class EventMessageRequest {
+import java.util.List;
+
+public class PicAndTextMessageResponse {
+	//initial capital is convenient
 	private String ToUserName;
 	private String FromUserName;
-	private int CreateTime;
-	private String MsgType;
-	private String Event;
-	private String EventKey;
-	private String URL;
+	private long CreateTime;
+	private String MsgType = "news";
+	private int ArticleCount;
+	List<Item> Articles;
 	public String getToUserName() {
 		return ToUserName;
 	}
@@ -20,10 +22,10 @@ public class EventMessageRequest {
 	public void setFromUserName(String fromUserName) {
 		FromUserName = fromUserName;
 	}
-	public int getCreateTime() {
+	public long getCreateTime() {
 		return CreateTime;
 	}
-	public void setCreateTime(int createTime) {
+	public void setCreateTime(long createTime) {
 		CreateTime = createTime;
 	}
 	public String getMsgType() {
@@ -32,23 +34,17 @@ public class EventMessageRequest {
 	public void setMsgType(String msgType) {
 		MsgType = msgType;
 	}
-	public String getEvent() {
-		return Event;
+	public int getArticleCount() {
+		return ArticleCount;
 	}
-	public void setEvent(String event) {
-		Event = event;
+	public void setArticleCount(int articleCount) {
+		ArticleCount = articleCount;
 	}
-	public String getEventKey() {
-		return EventKey;
+	public List<Item> getArticles() {
+		return Articles;
 	}
-	public void setEventKey(String eventKey) {
-		EventKey = eventKey;
-	}
-	public String getURL() {
-		return URL;
-	}
-	public void setURL(String uRL) {
-		URL = uRL;
+	public void setArticles(List<Item> articles) {
+		Articles = articles;
 	}
 	
 	
