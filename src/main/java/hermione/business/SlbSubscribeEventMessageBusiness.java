@@ -21,8 +21,8 @@ public class SlbSubscribeEventMessageBusiness {
 		Item item = new Item();
 		item.setTitle("欢迎关注速来保");
 		item.setDescription("平台创造机遇 服务成就卓越");
-		item.setPicUrl("http://wx.51sulaibao.cn/html/ywhz/images/banner.png");
-		item.setUrl("http://wx.51sulaibao.cn/html/ywhz/ywhz.html");
+		item.setPicUrl("http://static.99bx.cn/html/ywhz/images/banner.png");
+		item.setUrl("http://static.99bx.cn//html/ywhz/ywhz.html");
 		List<Item> list = new ArrayList<Item>();
 		list.add(item);
 		res.setArticles(list);

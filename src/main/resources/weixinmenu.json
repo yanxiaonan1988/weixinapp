@@ -7,11 +7,11 @@
                 "sub_button": [ ]
             }, 
             {
-                "type": "click", 
-                "name": "保险管家", 
-                "key": "menu_02", 
+                "type": "view", 
+                "name": "车险出单", 
+                "url": "http://d.99bx.cn", 
                 "sub_button": [ ]
-            }, 
+            },
             {
                 "type": "click", 
                 "name": "业务合作", 
