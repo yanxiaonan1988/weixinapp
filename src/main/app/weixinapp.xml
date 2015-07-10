@@ -15,6 +15,7 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
     <context:property-placeholder location="classpath:weixinapp.properties"/>
     <spring:beans>
         <spring:bean id="slbSnsapiBaseTransformerBean" name="slbSnsapiBaseTransformerBean" class="hermione.transformer.SlbSnsapiBaseTransformer"/>
+        <spring:bean id="hbSnsapiBaseTransformerBean" name="hbSnsapiBaseTransformerBean" class="hermione.transformer.HbSnsapiBaseTransformer"/>
     </spring:beans>
     <flow name="weixinappFlow1"  doc:description="recieve message from weixin" doc:name="weixinappFlow1">
         <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="8000" doc:name="HTTP" path="webService/weixin/huibao"/>
@@ -37,14 +38,28 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
                     </when>
                     <when evaluator="xpath" expression="(xml/MsgType)='event'">
                         <choice doc:name="Choice">
-                            <when evaluator="xpath" expression="(xml/EventKey)='menu_01'">
+                            <!-- subscribe event -->
+                            <when evaluator="xpath" expression="(xml/Event)='subscribe'">
                                 <mulexml:dom-to-xml-transformer doc:name="DOM to XML"/>
                                 <mulexml:xml-to-object-transformer returnClass="hermione.model.message.EventMessageRequest" doc:name="XML to Object">
                                     <mulexml:alias name="xml" class="hermione.model.message.EventMessageRequest"/>
                                 </mulexml:xml-to-object-transformer>
-                                <component class="hermione.business.EventMessageBusiness" doc:name="Java"/>
+                                <component class="hermione.business.HbSubscribeEventMessageBusiness" doc:name="Java"/>
                         		<mulexml:object-to-xml-transformer doc:name="Object to XML">
-                            		<mulexml:alias name="xml" class="hermione.model.message.TextMessageResponse"/>
+                            		<mulexml:alias name="xml" class="hermione.model.message.PicAndTextMessageResponse"/>
+                                    <mulexml:alias name="item" class="hermione.model.message.Item"/>
+                        		</mulexml:object-to-xml-transformer>
+                            </when>
+                            <!-- right menu event -->
+                            <when evaluator="xpath" expression="(xml/EventKey)='menu_03'">
+                                <mulexml:dom-to-xml-transformer doc:name="DOM to XML"/>
+                                <mulexml:xml-to-object-transformer returnClass="hermione.model.message.EventMessageRequest" doc:name="XML to Object">
+                                    <mulexml:alias name="xml" class="hermione.model.message.EventMessageRequest"/>
+                                </mulexml:xml-to-object-transformer>
+                                <component class="hermione.business.HbSubscribeEventMessageBusiness" doc:name="Java"/>
+                        		<mulexml:object-to-xml-transformer doc:name="Object to XML">
+                            		<mulexml:alias name="xml" class="hermione.model.message.PicAndTextMessageResponse"/>
+                                    <mulexml:alias name="item" class="hermione.model.message.Item"/>
                         		</mulexml:object-to-xml-transformer>
                             </when>
                         </choice>
@@ -74,16 +89,31 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
                         	path="#[userinfoQuery]"/>
                         <echo-component doc:name="Echo"/>
                     </when>
-                </choice>
-            </when>
-           <!-- 
-            <when expression="#[message.inboundProperties['http.method']=='POST']">
-                <choice doc:name="Choice">
-                    <when expression="#[message.inboundProperties['http.relative.path']=='ticket/getticket']">
-                        <custom-filter class="hermione.filter.JsApiTicketFilter" doc:name="jsapi_ticket filter"/>
+                    <!-- left menu  -->
+                    <when expression="#[message.inboundProperties['http.relative.path']=='menu/zy']">
+                        <transformer ref="hbSnsapiBaseTransformerBean" doc:name="Transformer Reference"/>
+
+                        <http:response-builder status="302" doc:name="HTTP Response Builder">
+            				<http:location value="#[message.outboundProperties.zyUrl]"/>
+        				</http:response-builder>
                     </when>
                 </choice>
-            </when> -->
+            </when>
+            <when expression="#[message.inboundProperties['http.method']=='POST']">
+                <choice doc:name="Choice">
+                    <when expression="#[message.inboundProperties['http.relative.path']=='message/template/send']">
+                    	<set-variable variableName="access_token" value="#[message.outboundProperties.access_token]" doc:name="Variable"/>
+                        <expression-component doc:name="Expression"><![CDATA[flowVars['msgTplSendQuery'] =
+	'cgi-bin/message/template/send?access_token=' + access_token;
+        ]]></expression-component>
+
+                        <http:outbound-endpoint exchange-pattern="request-response" host="api.weixin.qq.com" port="80" method="POST" doc:name="HTTP" contentType="application/json"
+                        	path="#[msgTplSendQuery]"/>
+                        <echo-component doc:name="Echo"/>
+                    </when>
+                </choice>
+            </when>
+            
         </choice>
     </flow>
     

@@ -1,0 +1,16 @@
+{
+        "button": [
+            {
+                "type": "view", 
+                "name": "展业神器", 
+                "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8082e1709c5a4c85&redirect_uri=http://esb.99bx.cn/webService/connectWeixin/huibao/menu/zy&response_type=code&scope=snsapi_base&state=123#wechat_redirect", 
+                "sub_button": [ ]
+            }, 
+            {
+                "type": "click", 
+                "name": "业务合作", 
+                "key": "menu_03", 
+                "sub_button": [ ]
+            }
+        ]
+}
