@@ -21,7 +21,7 @@ public class HbSubscribeEventMessageBusiness {
 		item.setTitle("欢迎关注慧保");
 		item.setDescription("平台创造机遇 服务成就卓越");
 		item.setPicUrl("http://static.99bx.cn/html/ywhz/images/banner.png");
-		item.setUrl("http://static.99bx.cn//html/ywhz/ywhz.html");
+		item.setUrl("http://www.99bx.cn");
 		List<Item> list = new ArrayList<Item>();
 		list.add(item);
 		res.setArticles(list);
