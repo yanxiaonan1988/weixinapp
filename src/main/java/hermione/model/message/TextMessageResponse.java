@@ -4,7 +4,7 @@ public class TextMessageResponse {
 	
 	private String ToUserName;
 	private String FromUserName;
-	private int CreateTime;
+	private long CreateTime;
 	private String MsgType = "text";
 	private String Content;
 	
@@ -20,10 +20,10 @@ public class TextMessageResponse {
 	public void setFromUserName(String fromUserName) {
 		FromUserName = fromUserName;
 	}
-	public int getCreateTime() {
+	public long getCreateTime() {
 		return CreateTime;
 	}
-	public void setCreateTime(int createTime) {
+	public void setCreateTime(long createTime) {
 		CreateTime = createTime;
 	}
 	public String getMsgType() {

@@ -16,6 +16,7 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
     <spring:beans>
         <spring:bean id="slbSnsapiBaseTransformerBean" name="slbSnsapiBaseTransformerBean" class="hermione.transformer.SlbSnsapiBaseTransformer"/>
         <spring:bean id="hbSnsapiBaseTransformerBean" name="hbSnsapiBaseTransformerBean" class="hermione.transformer.HbSnsapiBaseTransformer"/>
+        <spring:bean id="hcaxSnsapiBaseTransformerBean" name="hcaxSnsapiBaseTransformerBean" class="hermione.transformer.HcaxSnsapiBaseTransformer"/>
     </spring:beans>
     <flow name="weixinappFlow1"  doc:description="recieve message from weixin" doc:name="weixinappFlow1">
         <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="8000" doc:name="HTTP" path="webService/weixin/huibao"/>
@@ -69,7 +70,7 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
         </choice>
         <echo-component doc:name="Echo"/>
     </flow>
-    <!-- -->
+    
     <flow name="weixinappFlow2"  doc:description="send message to weixin" doc:name="weixinappFlow2">
         <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="8000" path="webService/connectWeixin/huibao" doc:name="HTTP" contentType="application/json"/>
         <custom-filter class="hermione.filter.AccessTokenFilter" doc:name="access token filter"/>
@@ -267,6 +268,81 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
                     </when>
                 </choice>
             </when> -->
+        </choice>
+    </flow>
+    
+    <!-- hechenganxin -->
+    <flow name="hcax"  doc:description="recieve message from weixin" doc:name="hcax">
+        <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="8000" doc:name="HTTP" path="webService/weixin/hcax"/>
+        <custom-filter class="hermione.filter.HcaxWeixinSignatureFilter" doc:name="Weixin Signature Filter"/>
+        <choice doc:name="Choice">
+            <when expression="#[message.inboundProperties['http.method']=='GET']">
+                <expression-transformer expression="#[message.inboundProperties['echostr']]" doc:name="echostr Expression"/>
+            </when>
+            <when expression="#[message.inboundProperties['http.method']=='POST']">
+                <choice doc:name="Choice">
+                    <when evaluator="xpath" expression="(xml/MsgType)='event'">
+                        <choice doc:name="Choice">
+                            <!-- subscribe event -->
+                            <when evaluator="xpath" expression="(xml/Event)='subscribe'">
+                                <mulexml:dom-to-xml-transformer doc:name="DOM to XML"/>
+                                <mulexml:xml-to-object-transformer returnClass="hermione.model.message.EventMessageRequest" doc:name="XML to Object">
+                                    <mulexml:alias name="xml" class="hermione.model.message.EventMessageRequest"/>
+                                </mulexml:xml-to-object-transformer>
+                                <component class="hermione.business.HcaxSubscribeEventMessageBusiness" doc:name="Java"/>
+                        		<mulexml:object-to-xml-transformer doc:name="Object to XML">
+                            		<mulexml:alias name="xml" class="hermione.model.message.TextMessageResponse"/>
+                        		</mulexml:object-to-xml-transformer>
+                            </when>
+                        </choice>
+                   </when>
+                </choice>
+            </when>
+        </choice>
+        <echo-component doc:name="Echo"/>
+    </flow>
+    <flow name="hcax2"  doc:description="send message to weixin" doc:name="hcax2">
+        <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="8000" path="webService/connectWeixin/hcax" doc:name="HTTP" contentType="application/json"/>
+        <custom-filter class="hermione.filter.HcaxAccessTokenFilter" doc:name="access token filter"/>
+        <choice doc:name="Choice">
+            <when expression="#[message.inboundProperties['http.method']=='GET']">
+                <choice doc:name="Choice">
+                    <when expression="#[message.inboundProperties['http.relative.path']=='user/info']">
+                    	<set-variable variableName="openid" value="#[message.inboundProperties.openid]" doc:name="Variable"/>
+                    	<set-variable variableName="access_token" value="#[message.outboundProperties.access_token]" doc:name="Variable"/>
+                        <expression-component doc:name="Expression"><![CDATA[flowVars['userinfoQuery'] =
+	'cgi-bin/user/info?access_token=' + access_token
+	+ '&openid='+openid
+	+ '&lang=zh_CN';
+        payload = null;]]></expression-component>
+                    	
+                        <http:outbound-endpoint exchange-pattern="request-response" host="api.weixin.qq.com" port="80" method="GET" doc:name="HTTP" contentType="application/json"
+                        	path="#[userinfoQuery]"/>
+                        <echo-component doc:name="Echo"/>
+                    </when>
+                    <when expression="#[message.inboundProperties['http.relative.path']=='menu/zy']">
+                        <transformer ref="hcaxSnsapiBaseTransformerBean" doc:name="Transformer Reference"/>
+
+                        <http:response-builder status="302" doc:name="HTTP Response Builder">
+            				<http:location value="#[message.outboundProperties.zyUrl]"/>
+        				</http:response-builder>
+                    </when>
+                </choice>
+            </when>
+            <when expression="#[message.inboundProperties['http.method']=='POST']">
+                <choice doc:name="Choice">
+                    <when expression="#[message.inboundProperties['http.relative.path']=='message/template/send']">
+                    	<set-variable variableName="access_token" value="#[message.outboundProperties.access_token]" doc:name="Variable"/>
+                        <expression-component doc:name="Expression"><![CDATA[flowVars['msgTplSendQuery'] =
+	'cgi-bin/message/template/send?access_token=' + access_token;
+        ]]></expression-component>
+
+                        <http:outbound-endpoint exchange-pattern="request-response" host="api.weixin.qq.com" port="80" method="POST" doc:name="HTTP" contentType="application/json"
+                        	path="#[msgTplSendQuery]"/>
+                        <echo-component doc:name="Echo"/>
+                    </when>
+                </choice>
+            </when>
         </choice>
     </flow>
      
