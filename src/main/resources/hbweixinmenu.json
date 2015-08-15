@@ -7,8 +7,14 @@
                 "sub_button": [ ]
             }, 
             {
-                "type": "click", 
+                "type": "view", 
                 "name": "业务合作", 
+                "url": "http://mp.weixin.qq.com/s?__biz=MjM5NjcxMzA3MQ==&mid=209415807&idx=1&sn=46831f1c5baead12078b7e553bc476bf#rd", 
+                "sub_button": [ ]
+            },
+            {
+                "type": "click", 
+                "name": "关于慧保", 
                 "key": "menu_03", 
                 "sub_button": [ ]
             }

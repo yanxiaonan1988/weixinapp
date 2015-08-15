@@ -8,6 +8,7 @@ public class EventMessageRequest {
 	private String Event;
 	private String EventKey;
 	private String URL;
+	private String Ticket;
 	public String getToUserName() {
 		return ToUserName;
 	}
@@ -49,6 +50,12 @@ public class EventMessageRequest {
 	}
 	public void setURL(String uRL) {
 		URL = uRL;
+	}
+	public String getTicket() {
+		return Ticket;
+	}
+	public void setTicket(String ticket) {
+		Ticket = ticket;
 	}
 	
 	

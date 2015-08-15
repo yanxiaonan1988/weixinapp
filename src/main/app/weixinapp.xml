@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:https="http://www.mulesoft.org/schema/mule/https" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns:context="http://www.springframework.org/schema/context" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:https="http://www.mulesoft.org/schema/mule/https" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns:context="http://www.springframework.org/schema/context" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.1"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
@@ -11,12 +11,15 @@ http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mul
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd
 http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
-http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/https/current/mule-https.xsd">
+http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/https/current/mule-https.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
     <context:property-placeholder location="classpath:weixinapp.properties"/>
     <spring:beans>
         <spring:bean id="slbSnsapiBaseTransformerBean" name="slbSnsapiBaseTransformerBean" class="hermione.transformer.SlbSnsapiBaseTransformer"/>
         <spring:bean id="hbSnsapiBaseTransformerBean" name="hbSnsapiBaseTransformerBean" class="hermione.transformer.HbSnsapiBaseTransformer"/>
         <spring:bean id="hcaxSnsapiBaseTransformerBean" name="hcaxSnsapiBaseTransformerBean" class="hermione.transformer.HcaxSnsapiBaseTransformer"/>
+        <spring:bean id="slbQrcodeCreateLimitWithIconTransformerBean" name="slbQrcodeCreateLimitWithIconTransformerBean" class="hermione.transformer.SlbQrcodeCreateLimitWithIconTransformer"/>
+        
     </spring:beans>
     <flow name="weixinappFlow1"  doc:description="recieve message from weixin" doc:name="weixinappFlow1">
         <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="8000" doc:name="HTTP" path="webService/weixin/huibao"/>
@@ -163,6 +166,18 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
                                     <mulexml:alias name="item" class="hermione.model.message.Item"/>
                         		</mulexml:object-to-xml-transformer>
                             </when>
+                            <!-- scans event -->
+                            <when evaluator="xpath" expression="(xml/Event)='SCAN'">
+                                <mulexml:dom-to-xml-transformer doc:name="DOM to XML"/>
+                                <mulexml:xml-to-object-transformer returnClass="hermione.model.message.EventMessageRequest" doc:name="XML to Object">
+                                    <mulexml:alias name="xml" class="hermione.model.message.EventMessageRequest"/>
+                                </mulexml:xml-to-object-transformer>
+                                <component class="hermione.business.SlbSubscribeEventMessageBusiness" doc:name="Java"/>
+                        		<mulexml:object-to-xml-transformer doc:name="Object to XML">
+                            		<mulexml:alias name="xml" class="hermione.model.message.PicAndTextMessageResponse"/>
+                                    <mulexml:alias name="item" class="hermione.model.message.Item"/>
+                        		</mulexml:object-to-xml-transformer>
+                            </when>
                             <when evaluator="xpath" expression="(xml/EventKey)='menu_02'">
                                 <mulexml:dom-to-xml-transformer doc:name="DOM to XML"/>
                                 <mulexml:xml-to-object-transformer returnClass="hermione.model.message.EventMessageRequest" doc:name="XML to Object">
@@ -243,6 +258,37 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
                         <http:response-builder status="302" doc:name="HTTP Response Builder">
             				<http:location value="#[message.outboundProperties.zyUrl]"/>
         				</http:response-builder>
+                    </when>
+                    <!-- create qrcode -->
+                    <when expression="#[message.inboundProperties['http.relative.path']=='qrcode/create/limit']">
+                    	<set-variable variableName="openid" value="#[message.inboundProperties.openid]" doc:name="Variable"/>
+                    	<set-variable variableName="sceneid" value="#[message.inboundProperties.sceneid]" doc:name="Variable"/>
+                    	<set-variable variableName="access_token" value="#[message.outboundProperties.access_token]" doc:name="Variable"/>
+                        <expression-component doc:name="Expression"><![CDATA[flowVars['qrcodeCreateUrl'] =
+	'cgi-bin/qrcode/create?access_token=' + access_token;]]></expression-component>
+                        <set-payload doc:name="Set Payload" value="{&quot;action_name&quot;: &quot;QR_LIMIT_STR_SCENE&quot;, &quot;action_info&quot;: {&quot;scene&quot;: {&quot;scene_str&quot;: &quot;#[message.inboundProperties.sceneid]&quot;}}}"/>
+                    	
+                        <http:outbound-endpoint exchange-pattern="request-response" host="api.weixin.qq.com" port="80" method="POST" doc:name="HTTP" contentType="application/json"
+                        	path="#[qrcodeCreateUrl]"/>
+                        <echo-component doc:name="Echo"/>
+                        <scripting:transformer doc:name="Javascript">
+                            <scripting:script engine="JavaScript"><![CDATA[var resultJson = eval('(' + payload + ')');
+payload = 'cgi-bin/showqrcode?ticket=' + resultJson.ticket;]]></scripting:script>
+                        </scripting:transformer>
+                        <http:outbound-endpoint exchange-pattern="request-response" host="mp.weixin.qq.com" port="80" method="GET" doc:name="HTTP" contentType="image/jpg" path="#[payload]"/>
+                        
+                    </when>
+                    
+                    <!-- create qrcode with self image icon-->
+                    <when expression="#[message.inboundProperties['http.relative.path']=='qrcode/create/limitwithicon']">
+                    	<set-variable variableName="openid" value="#[message.inboundProperties.openid]" doc:name="Variable"/>
+                    	<set-variable variableName="sceneid" value="#[message.inboundProperties.sceneid]" doc:name="Variable"/>
+                    	<set-variable variableName="access_token" value="#[message.outboundProperties.access_token]" doc:name="Variable"/>
+                      	
+                      	<transformer ref="slbQrcodeCreateLimitWithIconTransformerBean" doc:name="Transformer Reference"/>
+                        <http:response-builder doc:name="HTTP Response Builder" contentType="image/png" status="200"/>
+                        
+                        <!-- <set-payload value="#[message.outboundProperties['qrcodejpg']]" doc:name="Set Payload"/> -->
                     </when>
                 </choice>
             </when>

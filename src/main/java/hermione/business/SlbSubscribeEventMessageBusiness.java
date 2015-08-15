@@ -1,5 +1,10 @@
 package hermione.business;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +17,37 @@ import hermione.model.message.TextMessageResponse;
 public class SlbSubscribeEventMessageBusiness {
 	public PicAndTextMessageResponse process(EventMessageRequest req){
 		System.out.println("####SlbSubscribeEventMessageBusiness");
+		
+		String openid = req.getFromUserName();
+		String sceneid = null;
+		if(req.getEvent().equals("subscribe")){
+			if(req.getEventKey()!=null){
+				sceneid = req.getEventKey().substring(8, req.getEventKey().length());
+				System.out.println("newscan:"+sceneid);
+			}
+		}
+		if(req.getEvent().equals("SCAN")){
+			if(req.getEventKey()!=null){
+				sceneid = req.getEventKey();
+				System.out.println("oldscan:"+sceneid);
+			}
+		}
+		
+		URL url;
+		try {
+			url = new URL("http://wx.99bx.cn/api/sulaibao/wxReferee?openId="+openid+"&sceneId="+sceneid);
+			URLConnection conn = url.openConnection();
+			InputStream in = conn.getInputStream();
+			in.close();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		PicAndTextMessageResponse res = new PicAndTextMessageResponse();
 		res.setToUserName(req.getFromUserName());
 		res.setFromUserName(req.getToUserName());
