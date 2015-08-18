@@ -194,7 +194,7 @@ http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/em
                                 <mulexml:xml-to-object-transformer returnClass="hermione.model.message.EventMessageRequest" doc:name="XML to Object">
                                     <mulexml:alias name="xml" class="hermione.model.message.EventMessageRequest"/>
                                 </mulexml:xml-to-object-transformer>
-                                <component class="hermione.business.SlbSubscribeEventMessageBusiness" doc:name="Java"/>
+                                <component class="hermione.business.SlbCoorperateEventMessageBusiness" doc:name="Java"/>
                         		<mulexml:object-to-xml-transformer doc:name="Object to XML">
                             		<mulexml:alias name="xml" class="hermione.model.message.PicAndTextMessageResponse"/>
                                     <mulexml:alias name="item" class="hermione.model.message.Item"/>

@@ -160,7 +160,14 @@ public class SlbQrcodeCreateLimitWithIconTransformer extends
 			BufferedImage qrCodeImg = ImageIO.read(qrCodeInputStream);
 			BufferedImage myPicImg = ImageIO.read(myPicInputStream);
 			BufferedImage cardBackImg = ImageIO.read(cardBackInputStream);
-			Graphics graphics = backImg.getGraphics();
+//			Graphics graphics = backImg.getGraphics();
+			
+			
+			BufferedImage convertedImage=new BufferedImage(backImg.getWidth(), backImg.getHeight(), BufferedImage.TYPE_INT_RGB );
+			Graphics graphics = convertedImage.getGraphics();
+			graphics.drawImage(backImg,0,0,null);
+
+			
 			graphics.setFont(new Font("宋体", Font.BOLD, 34));
 			graphics.setColor(new Color(0xff9c1e));
 
@@ -184,7 +191,7 @@ public class SlbQrcodeCreateLimitWithIconTransformer extends
 			graphics.drawString(phone, 10 + qrCodeImgWidth + 47 +5, 80 + 120+2);
 
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			ImageIO.write(backImg, "png", os);
+			ImageIO.write(convertedImage, "png", os);
 			inputStream = new ByteArrayInputStream(os.toByteArray());
 
 			graphics.dispose();

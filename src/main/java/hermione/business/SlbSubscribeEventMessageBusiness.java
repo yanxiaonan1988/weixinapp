@@ -21,13 +21,13 @@ public class SlbSubscribeEventMessageBusiness {
 		String openid = req.getFromUserName();
 		String sceneid = null;
 		if(req.getEvent().equals("subscribe")){
-			if(req.getEventKey()!=null){
+			if(req.getEventKey()!=null && !req.getEventKey().equals("")){
 				sceneid = req.getEventKey().substring(8, req.getEventKey().length());
 				System.out.println("newscan:"+sceneid);
 			}
 		}
 		if(req.getEvent().equals("SCAN")){
-			if(req.getEventKey()!=null){
+			if(req.getEventKey()!=null && !req.getEventKey().equals("")){
 				sceneid = req.getEventKey();
 				System.out.println("oldscan:"+sceneid);
 			}
@@ -55,10 +55,10 @@ public class SlbSubscribeEventMessageBusiness {
 		System.out.println("openid:"+res.getToUserName());
 		res.setArticleCount(1);
 		Item item = new Item();
-		item.setTitle("欢迎关注速来保");
-		item.setDescription("平台创造机遇 服务成就卓越");
-		item.setPicUrl("http://static.99bx.cn/html/ywhz/images/banner.png");
-		item.setUrl("http://static.99bx.cn//html/ywhz/ywhz.html");
+		item.setTitle("中国互联网保险第一品牌");
+		item.setDescription("点击购买");
+		item.setPicUrl("http://static.99bx.cn/static/images/vechile-ad_24.jpg");
+		item.setUrl("http://cms.99bx.cn/html/page/sulaibao/autoInsurance/545c4c8debeffb702f989eecd49900c00aa32c8f/a43db6d2163f5c5378b7b171e7d6369be0045feb.html?from=singlemessage&isappinstalled=0");
 		List<Item> list = new ArrayList<Item>();
 		list.add(item);
 		res.setArticles(list);
