@@ -20,6 +20,7 @@ http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/em
         <spring:bean id="hcaxSnsapiBaseTransformerBean" name="hcaxSnsapiBaseTransformerBean" class="hermione.transformer.HcaxSnsapiBaseTransformer"/>
         <spring:bean id="slbQrcodeCreateLimitWithIconTransformerBean" name="slbQrcodeCreateLimitWithIconTransformerBean" class="hermione.transformer.SlbQrcodeCreateLimitWithIconTransformer"/>
         <spring:bean id="slbQrcodeCreateLimitWithIconOnlyTransformerBean" name="slbQrcodeCreateLimitWithIconOnlyTransformerBean" class="hermione.transformer.SlbQrcodeCreateLimitWithIconOnlyTransformer"/>
+        <spring:bean id="hcaxQrcodeCreateLimitWithIconOnlyTransformerBean" name="hcaxQrcodeCreateLimitWithIconOnlyTransformerBean" class="hermione.transformer.HcaxQrcodeCreateLimitWithIconOnlyTransformer"/>
     </spring:beans>
     <flow name="weixinappFlow1"  doc:description="recieve message from weixin" doc:name="weixinappFlow1">
         <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="8000" doc:name="HTTP" path="webService/weixin/huibao"/>
@@ -381,6 +382,33 @@ payload = 'cgi-bin/showqrcode?ticket=' + resultJson.ticket;]]></scripting:script
                         <http:response-builder status="302" doc:name="HTTP Response Builder">
             				<http:location value="#[message.outboundProperties.zyUrl]"/>
         				</http:response-builder>
+                    </when>
+                     <!-- create qrcode -->
+                    <when expression="#[message.inboundProperties['http.relative.path']=='qrcode/create/limit']">
+                    	<set-variable variableName="openid" value="#[message.inboundProperties.openid]" doc:name="Variable"/>
+                    	<set-variable variableName="sceneid" value="#[message.inboundProperties.sceneid]" doc:name="Variable"/>
+                    	<set-variable variableName="access_token" value="#[message.outboundProperties.access_token]" doc:name="Variable"/>
+                        <expression-component doc:name="Expression"><![CDATA[flowVars['qrcodeCreateUrl'] =
+	'cgi-bin/qrcode/create?access_token=' + access_token;]]></expression-component>
+                        <set-payload doc:name="Set Payload" value="{&quot;action_name&quot;: &quot;QR_LIMIT_STR_SCENE&quot;, &quot;action_info&quot;: {&quot;scene&quot;: {&quot;scene_str&quot;: &quot;#[message.inboundProperties.sceneid]&quot;}}}"/>
+                    	
+                        <http:outbound-endpoint exchange-pattern="request-response" host="api.weixin.qq.com" port="80" method="POST" doc:name="HTTP" contentType="application/json"
+                        	path="#[qrcodeCreateUrl]"/>
+                        <echo-component doc:name="Echo"/>
+                        <scripting:transformer doc:name="Javascript">
+                            <scripting:script engine="JavaScript"><![CDATA[var resultJson = eval('(' + payload + ')');
+payload = 'cgi-bin/showqrcode?ticket=' + resultJson.ticket;]]></scripting:script>
+                        </scripting:transformer>
+                        <http:outbound-endpoint exchange-pattern="request-response" host="mp.weixin.qq.com" port="80" method="GET" doc:name="HTTP" contentType="image/jpg" path="#[payload]"/>
+                        
+                    </when>
+                     <!-- create qrcode with self image icon new-->
+                    <when expression="#[message.inboundProperties['http.relative.path']=='qrcode/create/limitwithicononly']">
+                    	<set-variable variableName="openid" value="#[message.inboundProperties.openid]" doc:name="Variable"/>
+                    	<set-variable variableName="sceneid" value="#[message.inboundProperties.sceneid]" doc:name="Variable"/>
+                    	<set-variable variableName="access_token" value="#[message.outboundProperties.access_token]" doc:name="Variable"/>
+                      	
+                      	<transformer ref="hcaxQrcodeCreateLimitWithIconOnlyTransformerBean" doc:name="Transformer Reference"/>
                     </when>
                 </choice>
             </when>
