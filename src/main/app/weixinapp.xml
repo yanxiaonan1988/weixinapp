@@ -19,7 +19,7 @@ http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/em
         <spring:bean id="hbSnsapiBaseTransformerBean" name="hbSnsapiBaseTransformerBean" class="hermione.transformer.HbSnsapiBaseTransformer"/>
         <spring:bean id="hcaxSnsapiBaseTransformerBean" name="hcaxSnsapiBaseTransformerBean" class="hermione.transformer.HcaxSnsapiBaseTransformer"/>
         <spring:bean id="slbQrcodeCreateLimitWithIconTransformerBean" name="slbQrcodeCreateLimitWithIconTransformerBean" class="hermione.transformer.SlbQrcodeCreateLimitWithIconTransformer"/>
-        
+        <spring:bean id="slbQrcodeCreateLimitWithIconOnlyTransformerBean" name="slbQrcodeCreateLimitWithIconOnlyTransformerBean" class="hermione.transformer.SlbQrcodeCreateLimitWithIconOnlyTransformer"/>
     </spring:beans>
     <flow name="weixinappFlow1"  doc:description="recieve message from weixin" doc:name="weixinappFlow1">
         <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="8000" doc:name="HTTP" path="webService/weixin/huibao"/>
@@ -289,6 +289,15 @@ payload = 'cgi-bin/showqrcode?ticket=' + resultJson.ticket;]]></scripting:script
                         <http:response-builder doc:name="HTTP Response Builder" contentType="image/png" status="200"/>
                         
                         <!-- <set-payload value="#[message.outboundProperties['qrcodejpg']]" doc:name="Set Payload"/> -->
+                    </when>
+                    
+                    <!-- create qrcode with self image icon new-->
+                    <when expression="#[message.inboundProperties['http.relative.path']=='qrcode/create/limitwithicononly']">
+                    	<set-variable variableName="openid" value="#[message.inboundProperties.openid]" doc:name="Variable"/>
+                    	<set-variable variableName="sceneid" value="#[message.inboundProperties.sceneid]" doc:name="Variable"/>
+                    	<set-variable variableName="access_token" value="#[message.outboundProperties.access_token]" doc:name="Variable"/>
+                      	
+                      	<transformer ref="slbQrcodeCreateLimitWithIconOnlyTransformerBean" doc:name="Transformer Reference"/>
                     </when>
                 </choice>
             </when>
