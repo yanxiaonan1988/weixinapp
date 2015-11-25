@@ -1,16 +1,16 @@
 {
         "button": [
             {
-                "name":"安心保",
+                "name":"在线投保",
                 "sub_button":[
                     {
                         "type":"view",
-                        "name":"即时投保",
+                        "name":"在线投保",
                         "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx06a5bc1d7c8f0029&redirect_uri=http://esb.99bx.cn/webService/connectWeixin/hcax/menu/zy&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
                     },
 					{
                         "type":"view",
-                        "name":"即时投保说明",
+                        "name":"在线投保说明",
                         "url":"http://mp.weixin.qq.com/s?__biz=MjM5MzA5MzA3NA==&mid=206981981&idx=1&sn=22e61f7d84b63fa45a9c0253641e0fb3"
                     },
                     {
