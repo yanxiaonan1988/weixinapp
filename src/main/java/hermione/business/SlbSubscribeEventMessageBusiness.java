@@ -55,8 +55,8 @@ public class SlbSubscribeEventMessageBusiness {
 		System.out.println("openid:"+res.getToUserName());
 		res.setArticleCount(1);
 		Item item = new Item();
-		item.setTitle("中国互联网保险第一品牌");
-		item.setDescription("点击购买");
+		item.setTitle("涓浗浜掕仈缃戜繚闄╃涓�鍝佺墝");
+		item.setDescription("鐐瑰嚮璐拱");
 		item.setPicUrl("http://static.99bx.cn/static/images/vechile-ad_24.jpg");
 		item.setUrl("http://cms.99bx.cn/html/page/sulaibao/autoInsurance/545c4c8debeffb702f989eecd49900c00aa32c8f/a43db6d2163f5c5378b7b171e7d6369be0045feb.html?from=singlemessage&isappinstalled=0");
 		List<Item> list = new ArrayList<Item>();

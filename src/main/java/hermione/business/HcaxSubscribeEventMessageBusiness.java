@@ -48,9 +48,9 @@ public class HcaxSubscribeEventMessageBusiness {
 		res.setFromUserName(req.getToUserName());
 		System.out.println("openid:"+res.getToUserName());
 		res.setCreateTime(new Date().getTime());
-		res.setContent("ÄúºÃ£¬¸ĞĞ»Äú¹Ø×¢ÎÒÃÇµÄºÍ³Ï°²ĞÄ±£ÏÕÏúÊÛÓĞÏŞ¹«Ë¾¹Ù·½Î¢ĞÅÆ½Ì¨£¡\r\n" +
-				"È«¹ú¿Í·şÈÈÏß£º0571-86578905\r\n" +
-				"´ÓÕâÒ»¿ÌÆğ£¬ÎÒÃÇ½«Ò»Ö±Åã°éºÍ¹Ø×¢ÄúµÄ±£ÏÕÇé¿ö¡£");
+		res.setContent("æ‚¨å¥½ï¼Œæ„Ÿè°¢æ‚¨å…³æ³¨æˆ‘ä»¬çš„å’Œè¯šå®‰å¿ƒä¿é™©é”€å”®æœ‰é™å…¬å¸å®˜æ–¹å¾®ä¿¡å¹³å°ï¼\r\n" +
+				"å…¨å›½å®¢æœçƒ­çº¿ï¼š0571-86578905\r\n" +
+				"ä»è¿™ä¸€åˆ»èµ·ï¼Œæˆ‘ä»¬å°†ä¸€ç›´é™ªä¼´å’Œå…³æ³¨æ‚¨çš„ä¿é™©æƒ…å†µã€‚");
 		
 		return res;	
 		

@@ -11,7 +11,7 @@ public class SlbEventMessageBusiness {
 		res.setFromUserName(req.getToUserName());
 		res.setCreateTime(1348831860);
 		System.out.println("openid:"+res.getToUserName());
-		res.setContent("��˽��룺"+"<a href='http://121.40.121.237:8082/checkBound?openId="+res.getToUserName()+"'>չҵƽ̨</a>");
+		res.setContent("点此进入："+"<a href='http://121.40.121.237:8082/checkBound?openId="+res.getToUserName()+"'>展业平台</a>");
 		return res;	
 		
 	}

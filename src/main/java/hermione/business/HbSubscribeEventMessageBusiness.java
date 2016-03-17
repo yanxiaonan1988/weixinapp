@@ -18,8 +18,8 @@ public class HbSubscribeEventMessageBusiness {
 		System.out.println("openid:"+res.getToUserName());
 		res.setArticleCount(1);
 		Item item = new Item();
-		item.setTitle("»¶Ó­¹Ø×¢»Û±£");
-		item.setDescription("Æ½Ì¨´´Ôì»úÓö ·şÎñ³É¾Í×¿Ô½");
+		item.setTitle("æ¬¢è¿å…³æ³¨æ…§ä¿");
+		item.setDescription("å¹³å°åˆ›é€ æœºé‡ æœåŠ¡æˆå°±å“è¶Š");
 		item.setPicUrl("http://static.99bx.cn/html/ywhz/images/banner.png");
 		item.setUrl("http://www.99bx.cn");
 		List<Item> list = new ArrayList<Item>();
