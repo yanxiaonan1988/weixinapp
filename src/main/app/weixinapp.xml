@@ -400,6 +400,18 @@ payload = 'cgi-bin/showqrcode?ticket=' + resultJson.ticket;]]></scripting:script
                             		<mulexml:alias name="xml" class="hermione.model.message.TextMessageResponse"/>
                         		</mulexml:object-to-xml-transformer>
                             </when>
+                            
+                            <!-- 意见建议 -->
+                            <when evaluator="xpath" expression="(xml/EventKey)='menu_03_03'">
+                                <mulexml:dom-to-xml-transformer doc:name="DOM to XML"/>
+                                <mulexml:xml-to-object-transformer returnClass="hermione.model.message.EventMessageRequest" doc:name="XML to Object">
+                                    <mulexml:alias name="xml" class="hermione.model.message.EventMessageRequest"/>
+                                </mulexml:xml-to-object-transformer>
+                                <component class="hermione.business.HcaxSuggestionEventMessageBusiness" doc:name="Java"/>
+                        		<mulexml:object-to-xml-transformer doc:name="Object to XML">
+                            		<mulexml:alias name="xml" class="hermione.model.message.TextMessageResponse"/>
+                        		</mulexml:object-to-xml-transformer>
+                            </when>
                         </choice>
                    </when>
                 </choice>

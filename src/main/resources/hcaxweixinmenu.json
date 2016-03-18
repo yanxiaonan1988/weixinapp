@@ -13,74 +13,36 @@
                         "name":"在线投保说明",
                         "url":"http://mp.weixin.qq.com/s?__biz=MjM5MzA5MzA3NA==&mid=206981981&idx=1&sn=22e61f7d84b63fa45a9c0253641e0fb3"
                     },
+					{
+                        "type":"view",
+                        "name":"众安保单查询",
+                        "url":"http://open.zhongan.com/weixin/policy/policySearch?from=singlemessage&isappinstalled=0"
+                    }
+                ]
+            },
+            {
+                type:"view",
+                "name":"历史消息",
+                "url":"http://mp.weixin.qq.com/mp/getmasssendmsg?__biz=MjM5MzA5MzA3NA==#wechat_redirect"
+            },
+            {
+                "name":"关于我们",
+                "sub_button":[
+                	{
+                        "type":"view",
+                        "name":"公司介绍",
+                        "url":"http://mp.weixin.qq.com/s?__biz=MjM5MzA5MzA3NA==&mid=206689763&idx=1&sn=b570cf9f3498eb29a0468f05cf12b5bf#rd"
+                    },
                     {
                         "type":"view",
                         "name":"360°保险管家",
                         "url":"http://mp.weixin.qq.com/s?__biz=MjM5MzA5MzA3NA==&mid=206917282&idx=1&sn=c368b1428f1fc46662f5b2cf5a4b82e4&scene=18#rd"
                     },
                     {
-                        "type":"view",
-                        "name":"公司介绍",
-                        "url":"http://mp.weixin.qq.com/s?__biz=MjM5MzA5MzA3NA==&mid=206689763&idx=1&sn=b570cf9f3498eb29a0468f05cf12b5bf#rd"
+                    	"type":"click",
+                    	"name":"意见建议",
+                    	"key":"menu_03_03"
                     }
-
-                ]
-            },
-            {
-                "name":"百万保家",
-                "sub_button":[
-                    {
-                        "type":"view",
-                        "name":"意外保险",
-                        "url":"http://mp.weixin.qq.com/s?__biz=MjM5MzA5MzA3NA==&mid=206917878&idx=1&sn=c1b2969966c7c15fc981cd494561f106&scene=18#rd"
-                    },
-                    {
-                        "type":"view",
-                        "name":"重大疾病保险",
-                        "url":"http://mp.weixin.qq.com/s?__biz=MjM5MzA5MzA3NA==&mid=206918084&idx=1&sn=03fe8585f7fe4def28c16f68c6660a54&scene=18#rd"
-                    },
-                    {
-                        "type":"view",
-                        "name":"商业养老保险",
-                        "url":"http://mp.weixin.qq.com/s?__biz=MjM5MzA5MzA3NA==&mid=206919338&idx=1&sn=4dd5d03532df30fc25c5783afb6919ca&scene=18#rd"
-                    },
-                    {
-                        "type":"view",
-                        "name":"家庭财产保险",
-                        "url":"http://mp.weixin.qq.com/s?__biz=MjM5MzA5MzA3NA==&mid=206918270&idx=1&sn=4323419da2e4eb411832e1f5e27830ad&scene=18#rd"
-                    },
-                    {
-                        "type":"view",
-                        "name":"车辆保险",
-                        "url":"http://mp.weixin.qq.com/s?__biz=MjM5MzA5MzA3NA==&mid=206918633&idx=1&sn=4f76766cd46e62fb1965a533503e2175&scene=18#rd"
-                    }
-
-                ]
-            },
-            {
-                "name":"千万保企",
-                "sub_button":[
-                    {
-                        "type":"view",
-                        "name":"企业财产保险",
-                        "url":"http://mp.weixin.qq.com/s?__biz=MjM5MzA5MzA3NA==&mid=206906367&idx=1&sn=0fd01290f0353b875c762b513c83c769#rd"
-                    },
-                    {
-                        "type":"view",
-                        "name":"雇主责任保险",
-                        "url":"http://mp.weixin.qq.com/s?__biz=MjM5MzA5MzA3NA==&mid=206906295&idx=1&sn=11a860bdd554824716994d0fb5e770fd&scene=18#rd"
-                    },
-                    {
-                        "type":"view",
-                        "name":"出口信用保险",
-                        "url":"http://mp.weixin.qq.com/s?__biz=MjM5MzA5MzA3NA==&mid=206906589&idx=1&sn=914c964e0434bb69594004f54097bed6#rd"
-                    },
-                    {
-                        "type":"view",
-                        "name":"全球高端医疗",
-                        "url":"http://mp.weixin.qq.com/s?__biz=MjM5MzA5MzA3NA==&mid=207279405&idx=1&sn=2e0fd82e690db2c9c4a63b92cd561c08&scene=1&from=singlemessage&isappinstalled=0#rd"
-                    }
-
                 ]
             }
         ]
