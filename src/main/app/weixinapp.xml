@@ -377,6 +377,14 @@ payload = 'cgi-bin/showqrcode?ticket=' + resultJson.ticket;]]></scripting:script
             </when>
             <when expression="#[message.inboundProperties['http.method']=='POST']">
                 <choice doc:name="Choice">
+                	<!-- auto reply -->
+                	<when evaluator="xpath" expression="(xml/MsgType)='text'">
+                        <mulexml:dom-to-xml-transformer doc:name="DOM to XML"/>
+                        <mulexml:xml-to-object-transformer returnClass="hermione.model.message.TextMessageRequest" doc:name="XML to Object">
+                            <mulexml:alias name="xml" class="hermione.model.message.TextMessageRequest"/>
+                        </mulexml:xml-to-object-transformer>
+                        <component class="hermione.business.HcaxTextMessageBusiness" doc:name="Java"/>
+                    </when>
                     <when evaluator="xpath" expression="(xml/MsgType)='event'">
                         <choice doc:name="Choice">
                             <!-- subscribe event -->

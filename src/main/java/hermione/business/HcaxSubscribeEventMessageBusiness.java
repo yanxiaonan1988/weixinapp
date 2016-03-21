@@ -48,9 +48,15 @@ public class HcaxSubscribeEventMessageBusiness {
 		res.setFromUserName(req.getToUserName());
 		System.out.println("openid:"+res.getToUserName());
 		res.setCreateTime(new Date().getTime());
-		res.setContent("您好，感谢您关注我们的和诚安心保险销售有限公司官方微信平台！\r\n" +
-				"全国客服热线：0571-86578905\r\n" +
-				"从这一刻起，我们将一直陪伴和关注您的保险情况。");
+		res.setContent("您好，欢迎关注【和诚安心保销】，您可以回复以下数字来了解我们。\r\n"+
+				"1、 公司介绍\r\n"+
+				"2、 360°保险管家\r\n"+
+				"3、 在线投保说明\r\n"+
+				"4、 咨询人工服务\r\n"+
+				"5、 百万保家\r\n"+
+				"6、 千万保企\r\n"+
+				"如有需要投保去保险方面的咨询可回复4进入人工服务。\r\n"+
+				"我们为您提供独具匠心的“360度管家式“保险专业服务。\r\n");
 		
 		return res;	
 		

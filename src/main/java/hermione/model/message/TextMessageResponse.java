@@ -1,5 +1,7 @@
 package hermione.model.message;
 
+import com.thoughtworks.xstream.XStream;
+
 public class TextMessageResponse {
 	
 	private String ToUserName;
@@ -37,6 +39,12 @@ public class TextMessageResponse {
 	}
 	public void setContent(String content) {
 		Content = content;
+	}
+	
+	public String toWeixinXml() throws ClassNotFoundException{
+		XStream xs = new XStream();
+		xs.alias("xml", Class.forName("hermione.model.message.TextMessageResponse"));
+		return xs.toXML(this);
 	}
 	
 }

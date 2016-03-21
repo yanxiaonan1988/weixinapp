@@ -2,6 +2,8 @@ package hermione.model.message;
 
 import java.util.List;
 
+import com.thoughtworks.xstream.XStream;
+
 public class PicAndTextMessageResponse {
 	//initial capital is convenient
 	private String ToUserName;
@@ -47,5 +49,10 @@ public class PicAndTextMessageResponse {
 		Articles = articles;
 	}
 	
-	
+	public String toWeixinXml() throws ClassNotFoundException{
+		XStream xs = new XStream();
+		xs.alias("xml", Class.forName("hermione.model.message.PicAndTextMessageResponse"));
+		xs.alias("item", Class.forName("hermione.model.message.Item"));
+		return xs.toXML(this);
+	}
 }
